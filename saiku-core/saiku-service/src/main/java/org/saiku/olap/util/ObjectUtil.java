@@ -27,6 +27,7 @@ import org.olap4j.OlapException;
 import org.olap4j.metadata.Dimension;
 import org.olap4j.metadata.Hierarchy;
 import org.olap4j.metadata.Level;
+import org.olap4j.metadata.Measure;
 import org.olap4j.metadata.Member;
 import org.olap4j.query.QueryAxis;
 import org.olap4j.query.QueryDimension;
@@ -155,16 +156,27 @@ public class ObjectUtil {
 	}
 
 	public static SaikuMember convert(Member m) {
-		return new SaikuMember(
-				m.getName(), 
-				m.getUniqueName(), 
-				m.getCaption(), 
-				m.getDescription(),
-				m.getDimension().getUniqueName(),
-				m.getHierarchy().getUniqueName(),
-				m.getLevel().getUniqueName());
+		if (m instanceof Measure)
+			return new SaikuMember(
+					m.getName(), 
+					m.getUniqueName(), 
+					m.getCaption(), 
+					m.getDescription(),
+					m.getDimension().getUniqueName(),
+					m.getHierarchy().getUniqueName(),
+					m.getLevel().getUniqueName(),
+					m.isVisible());
+		else
+			return new SaikuMember(
+					m.getName(), 
+					m.getUniqueName(), 
+					m.getCaption(), 
+					m.getDescription(),
+					m.getDimension().getUniqueName(),
+					m.getHierarchy().getUniqueName(),
+					m.getLevel().getUniqueName());
 	}
-	
+
 	public static SaikuDimensionSelection convertDimensionSelection(QueryDimension dim) {
 		List<SaikuSelection> selections = ObjectUtil.convertSelections(dim.getInclusions());
 		return new SaikuDimensionSelection(

@@ -26,6 +26,7 @@ public class SaikuMember extends AbstractSaikuObject {
 	private String description;
 	private String levelUniqueName;
 	private String hierarchyUniqueName;
+	private boolean visible;
 	
 	public SaikuMember() {}
 
@@ -36,6 +37,17 @@ public class SaikuMember extends AbstractSaikuObject {
 		this.dimensionUniqueName = dimensionUniqueName;
 		this.levelUniqueName = levelUniqueName;
 		this.hierarchyUniqueName = hierarchyUniqueName;
+		this.visible = true;
+	}
+
+	public SaikuMember(String name, String uniqueName, String caption, String description, String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName, boolean visible) {
+		super(uniqueName,name);
+		this.caption = caption;
+		this.description = description;
+		this.dimensionUniqueName = dimensionUniqueName;
+		this.levelUniqueName = levelUniqueName;
+		this.hierarchyUniqueName = hierarchyUniqueName;
+		this.visible = visible; 
 	}
 
 	public String getCaption() {
@@ -52,6 +64,10 @@ public class SaikuMember extends AbstractSaikuObject {
 	
 	public String getDimensionUniqueName() {
 		return dimensionUniqueName;
+	}
+
+	public boolean getVisible() {
+		return visible;
 	}
 
 	public String getHierarchyUniqueName() {
