@@ -28,15 +28,19 @@ public class SaikuDimension extends AbstractSaikuObject {
 	
 	private List<SaikuHierarchy> hierarchies;
 	
+	//KB new fields:
+	private String dimensionType;
+	
 	public SaikuDimension() {
 		super(null,null);
 		throw new RuntimeException("Unsupported Constructor. Serialization only");
 	};
 	
-	public SaikuDimension(String name, String uniqueName, String caption, String description, List<SaikuHierarchy> hierarchies) {
+	public SaikuDimension(String name, String uniqueName, String caption, String description, String dimensionType, List<SaikuHierarchy> hierarchies) {
 		super(uniqueName,name);
 		this.caption = caption;
 		this.description = description;
+		this.dimensionType = dimensionType;
 		this.hierarchies = hierarchies;
 	}
 
@@ -52,4 +56,16 @@ public class SaikuDimension extends AbstractSaikuObject {
 		return hierarchies;
 	}
 
+	//Added getter/setter for dimensionType variable
+	public String getDimensionType() {
+		return dimensionType;
+	}
+
+	public void setDimensionType(String dimensionType) {
+		this.dimensionType = dimensionType;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }
