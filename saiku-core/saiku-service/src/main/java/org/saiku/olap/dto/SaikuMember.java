@@ -19,6 +19,9 @@
  */
 package org.saiku.olap.dto;
 
+import org.olap4j.metadata.NamedList;
+import org.olap4j.metadata.Property;
+
 public class SaikuMember extends AbstractSaikuObject {
 	
 	private String caption;
@@ -27,6 +30,13 @@ public class SaikuMember extends AbstractSaikuObject {
 	private String levelUniqueName;
 	private String hierarchyUniqueName;
 	private boolean visible;
+	
+	//KB: Add MEMBER_KEY property:
+	private NamedList<Property> properties;
+	//Add memberKey:
+	private String memberKey;
+	//KB Add ChildMemberCount:
+	private int childMemberCount;
 	
 	public SaikuMember() {}
 
@@ -50,6 +60,15 @@ public class SaikuMember extends AbstractSaikuObject {
 		this.visible = visible; 
 	}
 
+	public SaikuMember(String name, String uniqueName, String caption, String dimensionUniqueName, String levelUniqueName, String memberKey, int childMemberCount) {
+		super(uniqueName,name);
+		this.caption = caption;
+		this.dimensionUniqueName = dimensionUniqueName;
+		//this.properties = properties;
+		this.memberKey = memberKey;
+		this.childMemberCount = childMemberCount;
+	}
+	
 	public String getCaption() {
 		return caption;
 	}
@@ -72,5 +91,17 @@ public class SaikuMember extends AbstractSaikuObject {
 
 	public String getHierarchyUniqueName() {
 		return hierarchyUniqueName;
+	}
+	//Getter method for memberKey
+	public String getMemberKey() {
+		return memberKey;
+	}
+	//Setter method for memberKey
+	public void setMemberKey(String memberKey) {
+		this.memberKey = memberKey;
+	}
+	//Getter method for childMemberCount
+	public int getChildMemberCount() {
+		return childMemberCount;
 	}
 }
