@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.saiku.AbstractServiceUtils;
 import org.saiku.TConnectionManager;
@@ -20,6 +21,8 @@ import org.saiku.service.olap.OlapQueryService;
 
 public class ServiceTest {
 
+	private static Logger log = Logger.getLogger(ServiceTest.class);
+	
 	protected static OlapMetaExplorer olapMetaExplorer;
 	
 	protected static OlapQueryService olapQueryService;
@@ -53,7 +56,7 @@ public class ServiceTest {
 	}
 	
 	public static void setupOlapMetaExplorer(IDatasourceManager ds){
-		System.out.println("create instance olapMetaExplorer");
+		System.out.println("create instance for olapMetaExplorer");
 		ds.setDatasource(new SaikuDatasource(connectionName, SaikuDatasource.Type.OLAP, testProps));
 		IConnectionManager ic = new TConnectionManager();
 		ic.setDataSourceManager(ds);
@@ -61,7 +64,7 @@ public class ServiceTest {
 	}
 	
 	public static void setupOlapQueryService(IDatasourceManager ds){
-		System.out.println("create instance olapQueryService");
+		System.out.println("create instance for olapQueryService");
 		IConnectionManager ic = new TConnectionManager();
 		ic.setDataSourceManager(ds);
 		
@@ -76,9 +79,8 @@ public class ServiceTest {
 		olapQueryService.setOlapDiscoverService(ods);
 	}
 	
-	public static String computeTestDataRoot(Class anyTestClass)
-			throws IOException {
-
+	public static String computeTestDataRoot(Class anyTestClass) throws IOException {
+		System.out.println("start computeTestDataRoot");
 		// create a temp file
 		File temp = File.createTempFile("temp-file-name", ".tmp");
 
@@ -86,8 +88,7 @@ public class ServiceTest {
 
 		// Get tempropary file path
 		String absolutePath = temp.getAbsolutePath();
-		String tempFilePath = absolutePath.substring(0,
-				absolutePath.lastIndexOf(File.separator));
+		String tempFilePath = absolutePath.substring(0, absolutePath.lastIndexOf(File.separator));
 		return tempFilePath + "/";
 	}
 
