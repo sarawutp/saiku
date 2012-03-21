@@ -32,7 +32,7 @@ public class SaikuMember extends AbstractSaikuObject {
 	private boolean visible;
 	
 	//KB: Add MEMBER_KEY property:
-	private NamedList<Property> properties;
+	//private NamedList<Property> properties;
 	//Add memberKey:
 	private String memberKey;
 	//KB Add ChildMemberCount:
@@ -40,7 +40,7 @@ public class SaikuMember extends AbstractSaikuObject {
 	
 	public SaikuMember() {}
 
-	public SaikuMember(String name, String uniqueName, String caption, String description, String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName) {
+	public SaikuMember(String name, String uniqueName, String caption, String description, String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName,String memberKey, int childMemberCount) {
 		super(uniqueName,name);
 		this.caption = caption;
 		this.description = description;
@@ -48,9 +48,11 @@ public class SaikuMember extends AbstractSaikuObject {
 		this.levelUniqueName = levelUniqueName;
 		this.hierarchyUniqueName = hierarchyUniqueName;
 		this.visible = true;
+		this.memberKey = memberKey;
+		this.childMemberCount = childMemberCount;
 	}
 
-	public SaikuMember(String name, String uniqueName, String caption, String description, String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName, boolean visible) {
+	public SaikuMember(String name, String uniqueName, String caption, String description, String dimensionUniqueName, String hierarchyUniqueName, String levelUniqueName, boolean visible, String memberKey, int childMemberCount) {
 		super(uniqueName,name);
 		this.caption = caption;
 		this.description = description;
@@ -58,6 +60,8 @@ public class SaikuMember extends AbstractSaikuObject {
 		this.levelUniqueName = levelUniqueName;
 		this.hierarchyUniqueName = hierarchyUniqueName;
 		this.visible = visible; 
+		this.memberKey = memberKey;
+		this.childMemberCount = childMemberCount;
 	}
 
 	public SaikuMember(String name, String uniqueName, String caption, String dimensionUniqueName, String levelUniqueName, String memberKey, int childMemberCount) {
