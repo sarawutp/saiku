@@ -171,25 +171,6 @@ public class ObjectUtil {
 	}
 
 	public static SaikuMember convert(Member m) {
-		/*if (m instanceof Measure)
-			return new SaikuMember(
-					m.getName(), 
-					m.getUniqueName(), 
-					m.getCaption(), 
-					m.getDescription(),
-					m.getDimension().getUniqueName(),
-					m.getHierarchy().getUniqueName(),
-					m.getLevel().getUniqueName(),
-					m.isVisible());
-		else
-			return new SaikuMember(
-					m.getName(), 
-					m.getUniqueName(), 
-					m.getCaption(), 
-					m.getDescription(),
-					m.getDimension().getUniqueName(),
-					m.getHierarchy().getUniqueName(),
-					m.getLevel().getUniqueName());*/
 		
 		//KB: Add MEMBER_KEY property:
 		//KB Add ChildMemberCount:
@@ -203,15 +184,30 @@ public class ObjectUtil {
 		//ignore
 		}
 		
-		return new SaikuMember(
-				m.getName(), 
-				m.getUniqueName(), 
-				m.getCaption(), 
-				m.getDimension().getUniqueName(),
-				m.getLevel().getUniqueName(),
-				memberKey,
-				childMemberCount
-				);
+		if (m instanceof Measure)
+			return new SaikuMember(
+					m.getName(), 
+					m.getUniqueName(), 
+					m.getCaption(), 
+					m.getDescription(),
+					m.getDimension().getUniqueName(),
+					m.getHierarchy().getUniqueName(),
+					m.getLevel().getUniqueName(),
+					m.isVisible(),
+					memberKey,
+					childMemberCount);
+		else
+			return new SaikuMember(
+					m.getName(), 
+					m.getUniqueName(), 
+					m.getCaption(), 
+					m.getDescription(),
+					m.getDimension().getUniqueName(),
+					m.getHierarchy().getUniqueName(),
+					m.getLevel().getUniqueName(),
+					memberKey,
+					childMemberCount);
+		
 	}
 
 	public static SaikuDimensionSelection convertDimensionSelection(QueryDimension dim) {
