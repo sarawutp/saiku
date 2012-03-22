@@ -17,7 +17,13 @@ import org.saiku.olap.dto.resultset.AbstractBaseCell;
 import org.saiku.olap.dto.resultset.CellDataSet;
 import org.saiku.olap.util.exception.SaikuOlapException;
 
-
+/**
+ * 
+ * To use this class for testing there are two steps you have to modify before run test.
+ * 
+ * <br/> 1. Change the "connectionProp" It is located on ServiceTest.class.
+ * <br/> 2. Change the "loadParams".
+ */
 public class OlapQueryServiceTest extends ServiceTest{
 	
 	
