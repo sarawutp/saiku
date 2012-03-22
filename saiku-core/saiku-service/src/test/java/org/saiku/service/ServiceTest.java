@@ -3,6 +3,7 @@ package org.saiku.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,11 @@ public class ServiceTest {
 	
 	protected static final String connectionName = "test";
 	
-	protected static final String connectionProp = "connection.properties";
+	//FoodMart connection properties
+	//protected static final String connectionProp = "connection.properties";
+	
+	//FAOSTAT connection properties
+	protected static final String connectionProp = "faostat-connection.properties";
 	
 	@BeforeClass
 	public static void setup() throws IOException {
@@ -44,7 +49,7 @@ public class ServiceTest {
 		File f = new File(System.getProperty("java.io.tmpdir") + "/files/");
 		f.mkdir();
 		IDatasourceManager ds = new ClassPathResourceDatasourceManager(System.getProperty("java.io.tmpdir") + "/files/");
-		InputStream inputStream = OlapMetaExplorerTest.class .getResourceAsStream(connectionProp);
+		InputStream inputStream = OlapMetaExplorerTest.class.getResourceAsStream(connectionProp);
 		try {
 			testProps.load(inputStream);
 		} catch (IOException e) {
