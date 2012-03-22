@@ -5,15 +5,11 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystem;
-import org.apache.commons.vfs.FileUtil;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.olap4j.OlapConnection;
 import org.saiku.AbstractServiceUtils;
@@ -27,15 +23,25 @@ import org.saiku.olap.dto.SaikuHierarchy;
 import org.saiku.olap.dto.SaikuLevel;
 import org.saiku.olap.dto.SaikuMember;
 import org.saiku.olap.util.exception.SaikuOlapException;
+import org.saiku.service.OlapTestParams;
+import org.saiku.service.ServiceTest;
 import org.saiku.service.datasource.ClassPathResourceDatasourceManager;
 import org.saiku.service.datasource.IDatasourceManager;
 
+/**
+ * 
+ * To use this class for testing there are two steps you have to modify before run test.
+ * 
+ * <br/> 1. Change the "connectionProp" It is located on ServiceTest.class.
+ * <br/> 2. Change the "loadParams".
+ */
+public class OlapMetaExplorerTest extends ServiceTest{
 
-public class OlapMetaExplorerTest {
-
-    private static OlapMetaExplorer olapMetaExplorer;
-    private static Properties testProps = new Properties();
-    
+	@BeforeClass
+	public static void loadParams(){
+		OlapTestParams.setupParams(OlapTestParams.FAOSTAT_DATA);
+	}
+	
     /**
      * Test that you can fetch all available connections.
      * @throws SaikuOlapException
@@ -47,7 +53,7 @@ public class OlapMetaExplorerTest {
        assertNotNull(output);
        
        assertEquals(1, output.size());
-       assertEquals("test", output.get(0).getName());
+       assertEquals(connectionName, output.get(0).getName());
        
     }
     
@@ -55,13 +61,14 @@ public class OlapMetaExplorerTest {
      * Test that you can get a single connection.
      * @throws SaikuOlapException
      */
+    
     @Test
     public final void testGetConnectionSuccess() throws SaikuOlapException{
-        SaikuConnection output = olapMetaExplorer.getConnection("test");
+        SaikuConnection output = olapMetaExplorer.getConnection(connectionName);
         
         assertNotNull(output);
         
-        assertEquals("test", output.getName());
+        assertEquals(connectionName, output.getName());
     }
     
     /**
@@ -88,17 +95,17 @@ public class OlapMetaExplorerTest {
     @Test
     public final void testGetConnections() throws SaikuOlapException{
         List<String> list = new ArrayList<String>();
-        list.add("test");
+        list.add(connectionName);
         List<SaikuConnection> connections = olapMetaExplorer.getConnections(list);
         
         assertNotNull(connections);
         
-        assertEquals("test", connections.get(0).getName());
+        assertEquals(connectionName, connections.get(0).getName());
     }
     
     @Test
     public final void testGetNativeConnection() throws SaikuOlapException{
-        OlapConnection output = olapMetaExplorer.getNativeConnection("test");
+        OlapConnection output = olapMetaExplorer.getNativeConnection(connectionName);
         
         assertNotNull(output);
         
@@ -123,11 +130,11 @@ public class OlapMetaExplorerTest {
      */
     @Test
     public final void testGetCubesSingleConnection(){
-        List<SaikuCube> output = olapMetaExplorer.getCubes("test");
+        List<SaikuCube> output = olapMetaExplorer.getCubes(connectionName);
 
         assertNotNull(output);
 
-        assertEquals("HR", output.get(0).getName());
+        assertEquals(OlapTestParams.cubeName, output.get(OlapTestParams.cubeNameIndex).getName());
     }
     
     /**
@@ -136,12 +143,12 @@ public class OlapMetaExplorerTest {
     @Test
     public final void testGetCubesMultipleConnections(){
         List<String> cubes = new ArrayList<String>();
-        cubes.add("test");
+        cubes.add(connectionName);
         List<SaikuCube> output = olapMetaExplorer.getCubes(cubes);
 
         assertNotNull(output);
 
-        assertEquals("HR", output.get(0).getName());
+        assertEquals(OlapTestParams.cubeName, output.get(OlapTestParams.cubeNameIndex).getName());
     }
     
     public final void testGetCubesMultipleConnectionsConnection(){
@@ -156,14 +163,14 @@ public class OlapMetaExplorerTest {
         
         assertNotNull(output);
         
-        assertEquals(8, output.size());
+        assertEquals(OlapTestParams.totalNumberOfCubes, output.size());
         
         for (int i = 0; i < output.size(); i++){
-        	assertEquals("FoodMart", output.get(i).getCatalogName());
+        	assertEquals(OlapTestParams.catalogName, output.get(i).getCatalogName());
         	output.get(i).getName();
-        	assertEquals("test", output.get(i).getConnectionName());
+        	assertEquals(connectionName, output.get(i).getConnectionName());
         	output.get(i).getCubeName();
-        	assertEquals("FoodMart", output.get(i).getSchemaName());
+        	assertEquals(OlapTestParams.schemaName, output.get(i).getSchemaName());
         	output.get(i).getUniqueName();
         }
         
@@ -178,11 +185,11 @@ public class OlapMetaExplorerTest {
     	 
          assertNotNull(output);
 
-         String[] names = { "HR","Sales 2","Sales Ragged","Sales Scenario","Sales","Store","Warehouse and Sales","Warehouse"};
+         //String[] names = { "HR","Sales 2","Sales Ragged","Sales Scenario","Sales","Store","Warehouse and Sales","Warehouse"};
 
          for (int i = 0; i < output.size(); i++){
-         	assertEquals(names[i], output.get(i).getName());
-         	assertEquals("["+names[i]+"]",output.get(i).getCubeName());
+         	assertEquals(OlapTestParams.cubesInOrder[i], output.get(i).getName());
+         	assertEquals("["+OlapTestParams.cubesInOrder[i]+"]",output.get(i).getCubeName());
          }
     }
     public final void testGetNativeCube(){
@@ -198,11 +205,14 @@ public class OlapMetaExplorerTest {
     public final void testGetAllDimensions() throws SaikuOlapException{
     	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
     	
-    	
-        List<SaikuDimension> dims = olapMetaExplorer.getAllDimensions(cubes.get(0));
-        
-        assertNotNull(dims);
-        assertEquals(7, dims.size());
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			List<SaikuDimension> dims = olapMetaExplorer.getAllDimensions(saikuCube);
+    			assertNotNull(dims);
+    	        assertEquals(OlapTestParams.numberOfDimension, dims.size());
+    	        break;
+    		}
+		}
     }
     
     /**
@@ -213,11 +223,15 @@ public class OlapMetaExplorerTest {
     public final void testGetDimension() throws SaikuOlapException{
         List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
     	
-    	SaikuDimension dim = olapMetaExplorer.getDimension(cubes.get(0), "Department");
-    	
-    	assertNotNull(dim);
-    	
-    	assertEquals("Department", dim.getName());
+        for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			SaikuDimension dim = olapMetaExplorer.getDimension(saikuCube, OlapTestParams.dimName);
+    			assertNotNull(dim);
+    			assertEquals(OlapTestParams.dimName, dim.getName());
+    	        break;
+    		}
+		}
     }
     
     /**
@@ -228,28 +242,54 @@ public class OlapMetaExplorerTest {
     public final void testGetDimensionNull() throws SaikuOlapException{
         List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
         
-        SaikuDimension dim = olapMetaExplorer.getDimension(cubes.get(0), "No dimension");
-        
-        assertNull(dim);
-        }
+        for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			SaikuDimension dim = olapMetaExplorer.getDimension(cubes.get(0), "No dimension");
+    		    assertNull(dim);
+    		    
+    	        break;
+    		}
+		}    
+    }
     
     @Test
     public final void testGetAllHierarchies() throws SaikuOlapException{
         
-    	List<SaikuHierarchy> hier = olapMetaExplorer.getAllHierarchies(olapMetaExplorer.getAllCubes().get(0));
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+
     	
-    	assertNotNull(hier);
+        for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuHierarchy> hier = olapMetaExplorer.getAllHierarchies(saikuCube);
+    		    
+    			assertNotNull(hier);
+    	    	
+    	    	assertEquals(OlapTestParams.numberOfHierarchy, hier.size());
+    			
+    	        break;
+    		}
+		}    
     	
-    	assertEquals(8, hier.size());
     }
     
     @Test
     public final void testGetHierarchy() throws SaikuOlapException{
-        SaikuHierarchy hier = olapMetaExplorer.getHierarchy(olapMetaExplorer.getAllCubes().get(0), "Department");
-        
-        assertNotNull(hier);
-        
-        assertEquals("Department", hier.getName());
+    	
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			SaikuHierarchy hier = olapMetaExplorer.getHierarchy(saikuCube, OlapTestParams.hierarchyName);
+    			assertNotNull(hier);
+    		        
+    		    assertEquals(OlapTestParams.hierarchyName, hier.getName());
+    		    
+    	        break;
+    		}
+		}    
+    	
     }
 
 //    @Test
@@ -260,113 +300,171 @@ public class OlapMetaExplorerTest {
     @Test
     public final void testGetAllLevels() throws SaikuOlapException{
         
-    	List<SaikuLevel> levels = olapMetaExplorer.getAllLevels(olapMetaExplorer.getAllCubes().get(0), "Department", "Department");
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuLevel> levels = olapMetaExplorer.getAllLevels(saikuCube, OlapTestParams.dimName, OlapTestParams.hierarchyName);
+    			
+    			assertNotNull(levels);
+    	    	
+    	    	assertEquals(OlapTestParams.level, levels.size());
+    			
+    	        break;
+    		}
+		}    
     	
-    	assertNotNull(levels);
     	
-    	assertEquals(2, levels.size());
     }
     
     @Test
     public final void testGetAllLevelsUniqueNameHierarchy() throws SaikuOlapException{
         
-        List<SaikuLevel> levels = olapMetaExplorer.getAllLevels(olapMetaExplorer.getAllCubes().get(0), "Department", "[Department]");
-        
-        assertNotNull(levels);
-        
-        assertEquals(2, levels.size());
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuLevel> levels = olapMetaExplorer.getAllLevels(saikuCube, OlapTestParams.dimName, OlapTestParams.uniqueHierarchyName);
+    			
+    			assertNotNull(levels);
+    	    	
+    	    	assertEquals(OlapTestParams.level, levels.size());
+    			
+    	        break;
+    		}
+		}   
+    	
     }
     
     @Test
     public final void testGetAllMembers() throws SaikuOlapException{
-    	List<SaikuMember> members = olapMetaExplorer.getAllMembers(olapMetaExplorer.getAllCubes().get(0), "Department", "Department", "Department Description");
     	
-    	assertNotNull(members);
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuMember> members = olapMetaExplorer.getAllMembers(saikuCube, OlapTestParams.dimName, OlapTestParams.hierarchyName, OlapTestParams.levelName);
+    			assertNotNull(members);
+    			assertEquals(OlapTestParams.totalMember, members.size());
+    			
+    	        break;
+    		}
+		}  
     	
-    	assertEquals(12, members.size());
     }
+    
     
     @Test
     public final void testGetMemeberChildren() throws SaikuOlapException{
 
-    	List<SaikuMember> members = olapMetaExplorer.getMemberChildren(olapMetaExplorer.getAllCubes().get(0), "[Department].[All Departments]");
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuMember> members = olapMetaExplorer.getMemberChildren(saikuCube, OlapTestParams.uniqueMemberName);
+    	    	
+    	    	assertNotNull(members);
+    	    	
+    	    	assertEquals(OlapTestParams.totalNumberMemeberChildren, members.size());
+    			
+    	        break;
+    		}
+		}  
     	
-    	assertNotNull(members);
-    	
-    	assertEquals(12, members.size());
     }
-    
+  
     @Test
     public final void testGetAllMeasures() throws SaikuOlapException{
-    	List<SaikuMember> members = olapMetaExplorer.getAllMeasures(olapMetaExplorer.getAllCubes().get(0));
     	
-    	assertNotNull(members);
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuMember> members = olapMetaExplorer.getAllMeasures(saikuCube);
+    			
+    			assertNotNull(members);
+    	    	
+    	    	assertEquals(OlapTestParams.totalNumberMeasure, members.size());
+    			
+    	        break;
+    		}
+		}
     	
-    	assertEquals(4, members.size());
     }
     
     @Test
     public final void testGetMemeber() throws SaikuOlapException{
-    	SaikuMember member = olapMetaExplorer.getMember(olapMetaExplorer.getAllCubes().get(0), "[Department].[All Departments]");
     	
-    	assertNotNull(member);
-    	assertEquals("[Department].[All Departments]", member.getUniqueName());
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			SaikuMember member = olapMetaExplorer.getMember(saikuCube, OlapTestParams.uniqueMemberName);
+    	    	
+    	    	assertNotNull(member);
+    	    	assertEquals(OlapTestParams.uniqueMemberName, member.getUniqueName());
+    			
+    	        break;
+    		}
+    	}
+    	
     }
     
-
+    
     @Test
     public final void testGetAllMembersUniqueNameHierarchy() throws SaikuOlapException{
-        List<SaikuMember> members = olapMetaExplorer.getAllMembers(olapMetaExplorer.getAllCubes().get(0), "Department", "[Department]", "Department Description");
-        
-        assertNotNull(members);
-        
-        assertEquals(12, members.size());
+    	
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuMember> members = olapMetaExplorer.getAllMembers(saikuCube, OlapTestParams.dimName, OlapTestParams.uniqueHierarchyName, OlapTestParams.levelName);
+    			assertNotNull(members);
+    			assertEquals(OlapTestParams.totalMember, members.size());
+    	        break;
+    		}
+    	}
+    	
     }
     
     @Test
     public final void testGetAllMembersUniqueNameLevel() throws SaikuOlapException{
-        List<SaikuMember> members = olapMetaExplorer.getAllMembers(olapMetaExplorer.getAllCubes().get(0), "Department", "Department", "[Department].[(All)]");
-        
-        assertNotNull(members);
-        
-        assertEquals(1, members.size());
+    	List<SaikuCube> cubes = olapMetaExplorer.getAllCubes();
+    	for (SaikuCube saikuCube : cubes) {
+    		if(OlapTestParams.cubeName.equals(saikuCube.getName())){
+    			
+    			List<SaikuMember> members = olapMetaExplorer.getAllMembers(saikuCube, OlapTestParams.dimName, OlapTestParams.hierarchyName, OlapTestParams.uniqueLevelName);
+    			
+    			assertNotNull(members);
+    			
+    			assertEquals(OlapTestParams.totalMember, members.size());
+    			
+    	        break;
+    		}
+    	}
+    	
     }
     
-
     
+    public static void main(String[] args) {
+    	AbstractServiceUtils ast = new AbstractServiceUtils();
+	    ast.initTestContext();
+	    IConnectionManager ic = new TConnectionManager();
+	   
+	    File f = new File(System.getProperty("java.io.tmpdir")+"/files/");
+	    f.mkdir();
+	    IDatasourceManager ds = new ClassPathResourceDatasourceManager(System.getProperty("java.io.tmpdir")+"/files/");
+	    InputStream inputStream= OlapMetaExplorerTest.class.getResourceAsStream("connection.properties");
+	    try {
+	        testProps.load(inputStream);
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	    ds.setDatasource(new SaikuDatasource("test", SaikuDatasource.Type.OLAP, testProps));
+	    ic.setDataSourceManager(ds);
+	    olapMetaExplorer = new OlapMetaExplorer(ic);
+	    
+	}
     
-    @BeforeClass
-public static void setup() throws IOException{
-    AbstractServiceUtils ast = new AbstractServiceUtils();
-    ast.initTestContext();
-    IConnectionManager ic = new TConnectionManager();
-    String returned = computeTestDataRoot(OlapMetaExplorerTest.class);
-    File f = new File(System.getProperty("java.io.tmpdir")+"/files/");
-    f.mkdir();
-    IDatasourceManager ds = new ClassPathResourceDatasourceManager(System.getProperty("java.io.tmpdir")+"/files/");
-    InputStream inputStream= OlapMetaExplorerTest.class.getResourceAsStream("connection.properties");
-    try {
-        testProps.load(inputStream);
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-    ds.setDatasource(new SaikuDatasource("test", SaikuDatasource.Type.OLAP, testProps));
-    ic.setDataSourceManager(ds);
-    olapMetaExplorer = new OlapMetaExplorer(ic);
-
-}
-    public static String computeTestDataRoot(Class anyTestClass) throws IOException {
-        
-        //create a temp file
-        File temp = File.createTempFile("temp-file-name", ".tmp"); 
-
-        System.out.println("Temp file : " + temp.getAbsolutePath());
-
-    //Get tempropary file path
-        String absolutePath = temp.getAbsolutePath();
-        String tempFilePath = absolutePath.
-            substring(0,absolutePath.lastIndexOf(File.separator));
-        return tempFilePath+"/";
-      }
 }
