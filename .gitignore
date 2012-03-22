@@ -1,16 +1,5 @@
 *.DS_Store
-buildall.sh
-saiku-bi-platform-plugin/.classpath
-saiku-bi-platform-plugin/.project
-saiku-bi-platform-plugin/.settings/org.eclipse.jdt.core.prefs
-saiku-bi-platform-plugin/.settings/org.eclipse.jdt.ui.prefs
-saiku-bi-platform-plugin/pom.xml
-saiku-core/saiku-service/.classpath
-saiku-core/saiku-service/.project
-saiku-core/saiku-service/.settings/org.eclipse.jdt.core.prefs
-saiku-core/saiku-service/pom.xml
-saiku-core/saiku-web/pom.xml
-saiku-webapp/pom.xml
+buildall-gio.sh
 buildall.all-w-git
 saiku-bi-platform-plugin/.settings/org.eclipse.core.resources.prefs
 saiku-bi-platform-plugin/.settings/org.eclipse.m2e.core.prefs
