@@ -1,5 +1,5 @@
 *.DS_Store
-buildall-gio.sh
+buildall-fao.sh
 buildall.all-w-git
 saiku-bi-platform-plugin/.settings/org.eclipse.core.resources.prefs
 saiku-bi-platform-plugin/.settings/org.eclipse.m2e.core.prefs
