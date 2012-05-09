@@ -1,6 +1,7 @@
 package org.saiku.sdw;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.saiku.TConnectionManager;
 import org.saiku.datasources.connection.IConnectionManager;
@@ -27,13 +29,24 @@ public class SDWDatasourceManagerTest {
 	@BeforeClass
 	public static void setup() throws IOException {
 		SDWMetadataConfiguration config = new SDWMetadataConfiguration();
-		config.setHost("http://cio049-vm1.hq.un.fao.org:8080");
-		config.setCatalogUri("/techcdr-sdw/services/resources/catalogs/{workspaceName}");
-		config.setConnectionUri("/techcdr-sdw/services/resources/connections/{workspaceName}/{connectionName}");
-		config.setConnectionsUri("/techcdr-sdw/services/resources/connections/{workspaceName}");
-		config.setMondrainSchemaUri("/techcdr-sdw/services/resources/schemas/{workspaceName}/{catalogName}.{schemaName}/xml");
-		config.setSchemaUri("/techcdr-sdw/services/resources/schemas/{workspaceName}?catalogName={catalogName}");
-		config.setWorkspaceUri("/techcdr-sdw/services/resources/workspaces");
+		System.out.println("start up");
+		InputStream is = SDWDatasourceManagerTest.class.getResourceAsStream("sdw-config.properties");
+		try{
+			Properties prop = new Properties();
+			prop.load(is);
+			
+			config.setHost((String) prop.get("host"));
+			config.setCatalogUri((String) prop.get("catalogUri"));
+			config.setConnectionUri((String) prop.get("connectionUri"));
+			config.setConnectionsUri((String) prop.get("connectionsUri"));
+			config.setMondrainSchemaUri((String) prop.get("mondrainSchemaUri"));
+			config.setSchemaUri((String) prop.get("schemaUri"));
+			config.setWorkspaceUri((String) prop.get("workspaceUri"));
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 		SDWMetadataClient client = new SDWMetadataClientManager(config);
 		ds = new SDWDatasourceManager(client);
 		
@@ -42,6 +55,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test load all the connection from SDW metadata service and store in saiku datasources 
 	 */
+	
 	@Test
 	public void testLoadDatasource(){
 		System.out.println("testing loading datasource from sdw metadata service");
@@ -63,6 +77,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test get the existing datasource.
 	 */
+	
 	@Test
 	public void testGetDatasource(){
 		System.out.println("testing get datasource");
@@ -83,6 +98,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test get all datasources.
 	 */
+	
 	@Test
 	public void testGetDatasources(){
 		System.out.println("testing get datasources");
@@ -95,6 +111,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test add new datasources.
 	 */
+	
 	@Test
 	public void testAddDatasource(){
 		System.out.println("testing add new datasources");
@@ -108,6 +125,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test remove add new datasources.
 	 */
+	
 	@Test
 	public void testRemoveDatasource(){
 		System.out.println("testing remove datasources");
@@ -125,6 +143,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test build OlapMetaExplorer
 	 */
+	
 	@Test
 	public void testBuildOlapMetaExplorer(){
 		System.out.println("testing OlapMetaExplorer");
