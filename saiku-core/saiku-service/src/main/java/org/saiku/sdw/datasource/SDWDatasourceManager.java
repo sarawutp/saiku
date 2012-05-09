@@ -13,7 +13,6 @@ import org.saiku.sdw.client.SDWMetadataClient;
 import org.saiku.sdw.client.dto.Catalog;
 import org.saiku.sdw.client.dto.Catalogs;
 import org.saiku.sdw.client.dto.Connection;
-import org.saiku.sdw.client.dto.Connections;
 import org.saiku.sdw.client.dto.Schema;
 import org.saiku.sdw.client.dto.Schemas;
 import org.saiku.sdw.client.dto.Workspace;
@@ -43,67 +42,59 @@ public class SDWDatasourceManager implements IDatasourceManager{
 		
 		Catalogs catalogs = sdwMetadataClient.retrieveCatalogs(workspaceName);
 		List<Catalog> listCatalog = catalogs.getCatalog();
+		
+		log.debug(workspaceName + " size = " + listCatalog.size());
+		
 		if(!listCatalog.isEmpty()){
 			for (Catalog catalog : listCatalog) {
 				String catalogName = catalog.getName();
 				if(catalogName != null){
-					Connections connections = sdwMetadataClient.retrieveConnections(workspaceName, catalogName);
-					List<Connection> listConnection = connections.getConnections();
-					if(!listConnection.isEmpty()){
-						if(listConnection.size() == 1){
-							Connection connection = listConnection.get(0);
-							Schemas schemas = sdwMetadataClient.retrieveSchemas(workspaceName, catalogName);
-							List<Schema> listSchema = schemas.getSchema();
-							for (Schema schema : listSchema) {
-								String schemaName = schema.getName();
-								if(schemaName != null){
-									String mondrianSchemaXML = sdwMetadataClient.retrieveMondrainSchemasXML(workspaceName, catalogName, schemaName);
-									if(mondrianSchemaXML != null){
-											
-										 log.debug(workspaceName + " | " + catalogName + " | " + schemaName);
-										 //Add the database connection info.
-										 Properties props = new Properties();
-										 props.setProperty(ISaikuConnection.USERNAME_KEY, connection.getUsername());
-										 props.setProperty(ISaikuConnection.PASSWORD_KEY, connection.getPassword());
-										 props.setProperty(ISaikuConnection.DRIVER_KEY, "mondrian.olap4j.MondrianOlap4jDriver");
-										 
-										 //Add the database URL		
-										 StringBuffer buffer = new StringBuffer();
-										 buffer.append("jdbc:mondrian:Jdbc=");
-										 buffer.append(connection.getUrl());
-										 
-										 //Add mondrain schema for each connection
-										 buffer.append(";CatalogContent="+mondrianSchemaXML);
-										 buffer.append(";JdbcDrivers=");
-										 buffer.append(connection.getDriver());
-											
-										 props.setProperty(ISaikuConnection.URL_KEY, buffer.toString());
-										 
-										 String datasourceName = connection.getName()+"-"+ schema.getName();
-										 
-										 SaikuDatasource ds = new SaikuDatasource(datasourceName,SaikuDatasource.Type.OLAP,props);
-										 datasources.put(datasourceName, ds);
-									}
-								}else{
-									log.error("Schema not found");
-								}
+					Schemas schemas = sdwMetadataClient.retrieveSchemas(workspaceName, catalogName);
+					List<Schema> listSchema = schemas.getSchema();
+					for (Schema schema : listSchema) {
+						String schemaName = schema.getName();
+						String connectionname = schema.getConnectionName();
+						if(schemaName != null && connectionname != null){
+							Connection connection = sdwMetadataClient.retrieveConnection(workspaceName,connectionname );
+							String mondrianSchemaXML = sdwMetadataClient.retrieveMondrainSchemasXML(workspaceName, catalogName, schemaName);
+							if(mondrianSchemaXML != null && connection != null){
+								
+								 log.info("create datasource for workspaceName="+workspaceName + ", catalogName=" + catalogName + ", schemaName=" + schemaName);
+								
+								 //Add the database connection info.
+								 Properties props = new Properties();
+								 props.setProperty(ISaikuConnection.USERNAME_KEY, connection.getUsername());
+								 props.setProperty(ISaikuConnection.PASSWORD_KEY, connection.getPassword());
+								 props.setProperty(ISaikuConnection.DRIVER_KEY, "mondrian.olap4j.MondrianOlap4jDriver");
+								 
+								 //Add the database URL		
+								 StringBuffer buffer = new StringBuffer();
+								 buffer.append("jdbc:mondrian:Jdbc=");
+								 buffer.append(connection.getUrl());
+								 
+								 //Add mondrain schema for each connection
+								 buffer.append(";CatalogContent="+mondrianSchemaXML);
+								 buffer.append(";JdbcDrivers=");
+								 buffer.append(connection.getDriver());
+									
+								 props.setProperty(ISaikuConnection.URL_KEY, buffer.toString());
+								 
+								 String datasourceName = schema.getName();
+								 //String datasourceName = workspaceName + " | " + catalogName + " | " + schemaName + " | " + connectionname;
+								 SaikuDatasource ds = new SaikuDatasource(datasourceName,SaikuDatasource.Type.OLAP,props);
+								 datasources.put(datasourceName, ds);
 							}
-								
-								
 						}else{
-							log.error("Has more than one connection");
-						}		
-					}else{
-						log.error("Connection not found");
+							log.error("Schema || connectionname not found for workspaceName="+workspaceName + ", catalogName="+catalogName);
+						}
 					}
 				}else{
-					log.error("Catalog not found");
+					log.error("Catalog not found for workspaceName="+workspaceName);
 				}
 			}
 		}else{
-			log.error("Catalog not found");
+			log.error("Catalog not found for workspaceName="+workspaceName);
 		}
-		
 	}
 	
 	public void load() {
@@ -161,5 +152,5 @@ public class SDWDatasourceManager implements IDatasourceManager{
 		log.info("get datasource | datasourceName="+datasourceName);
 		return datasources.get(datasourceName);
 	}
-
+	
 }

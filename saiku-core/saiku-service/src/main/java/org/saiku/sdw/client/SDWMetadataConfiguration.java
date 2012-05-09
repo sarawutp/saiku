@@ -5,6 +5,7 @@ public class SDWMetadataConfiguration {
 	private String host;
 	private String workspaceUri;
 	private String connectionUri;
+	private String connectionsUri;
 	private String catalogUri;
 	private String schemaUri;
 	private String mondrainSchemaUri;
@@ -44,6 +45,12 @@ public class SDWMetadataConfiguration {
 	}
 	public void setMondrainSchemaUri(String mondrainSchemaUri) {
 		this.mondrainSchemaUri = mondrainSchemaUri;
+	}
+	public String getConnectionsUri() {
+		return connectionsUri;
+	}
+	public void setConnectionsUri(String connectionsUri) {
+		this.connectionsUri = connectionsUri;
 	}
 	
 }

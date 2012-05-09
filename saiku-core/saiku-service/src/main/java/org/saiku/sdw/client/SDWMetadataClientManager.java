@@ -28,7 +28,7 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 	private static Logger log = Logger.getLogger(SDWMetadataClientManager.class);
 	
 	/**
-	 * All the REST service URI has been configure in spring configuration, and injected to SDWMetadataConfiguration object.
+	 * All the REST service URI has been configured in spring configuration, and injected to SDWMetadataConfiguration object.
 	 */
 	private SDWMetadataConfiguration sdwMetadataConfiguration;
 	
@@ -112,9 +112,8 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 				catalogs.setCatalog(list);
 				
 				Document doc = XMLUtil.buildDocument(is, false);
-				NodeList nodeList = XMLUtil.query(doc, "//Catalogs");
+				NodeList nodeList = XMLUtil.query(doc, "//Catalog");
 				int size = nodeList.getLength();
-				
 				for (int i = 1; i <=size; i++) {
 					Node uuid = XMLUtil.queryNode(doc, "(//Catalog/uuid)["+i+"]");
 					Node name = XMLUtil.queryNode(doc, "(//Catalog/name)["+i+"]");
@@ -140,27 +139,70 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 	}
 	
 	/**
-	 * Retrieves the Connections from SDW metadata service.
-	 * <br/><br/><b>Service URI:</b> /techcdr-sdw/services/resources/connections/{workspaceName}
+	 * Retrieves the Connection from SDW metadata service.
+	 * <br/><br/><b>Service URI:</b> /techcdr-sdw/services/resources/connections/{workspaceName}/{connectionName}
 	 * @param workspaceName
-	 * @return Connections info
+	 * @return Connection info
 	 */
-	public Connections retrieveConnections(String workspaceName,String catalogName){
-		String connectionsUrlStr = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getConnectionUri();
-		connectionsUrlStr = connectionsUrlStr.replaceAll("\\{workspaceName\\}", workspaceName);
-		connectionsUrlStr = connectionsUrlStr.replaceAll("\\{catalogName\\}", catalogName);
-		connectionsUrlStr = connectionsUrlStr.replaceAll("\\s", "%20");
-		log.debug(connectionsUrlStr);
+	public Connection retrieveConnection(String workspaceName,String connectionName){
+		String connectionUrlStr = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getConnectionUri();
+		connectionUrlStr = connectionUrlStr.replaceAll("\\{workspaceName\\}", workspaceName);
+		connectionUrlStr = connectionUrlStr.replaceAll("\\{connectionName\\}", connectionName);
+		connectionUrlStr = connectionUrlStr.replaceAll("\\s", "%20");
+		log.debug(connectionUrlStr);
 		try {
 			
+			InputStream is = deriveInputStreamFrom(new URL(connectionUrlStr));
+			if(is != null){
+				
+				Connection connection = new Connection();
+				Document doc = XMLUtil.buildDocument(is, false);
+				Node uuid = XMLUtil.queryNode(doc, "//uuid");
+				Node name = XMLUtil.queryNode(doc, "//name");
+				Node caption = XMLUtil.queryNode(doc, "//caption");
+				Node description = XMLUtil.queryNode(doc, "//description");
+				Node driver = XMLUtil.queryNode(doc, "//driver");
+				Node url = XMLUtil.queryNode(doc, "//url");
+				Node username = XMLUtil.queryNode(doc, "//username");
+				Node password = XMLUtil.queryNode(doc, "//password");
+				
+				if(caption != null)connection.setCaption(caption.getTextContent());
+				if(description != null)connection.setDescription(description.getTextContent());
+				if(driver != null)connection.setDriver(driver.getTextContent());
+				if(name != null)connection.setName(name.getTextContent());
+				if(password != null)connection.setPassword(password.getTextContent());
+				if(url != null)connection.setUrl(url.getTextContent());
+				if(username != null)connection.setUsername(username.getTextContent());
+				if(uuid != null)connection.setUuid(uuid.getTextContent());
+				
+				return connection;
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieves the list of Connection from SDW metadata service.
+	 * <br/><br/><b>Service URI:</b> /techcdr-sdw/services/resources/connections/{workspaceName}
+	 * @param workspaceName
+	 * @return List of available connections
+	 */
+	public Connections retrieveConnections(String workspaceName) {
+		String connectionsUrlStr = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getConnectionsUri();
+		connectionsUrlStr = connectionsUrlStr.replaceAll("\\{workspaceName\\}", workspaceName);
+		connectionsUrlStr = connectionsUrlStr.replaceAll("\\s", "%20");
+		log.debug(connectionsUrlStr);
+		try{
 			InputStream is = deriveInputStreamFrom(new URL(connectionsUrlStr));
 			if(is != null){
 				Connections connections = new Connections();
 				List<Connection> list = new ArrayList<Connection>();
 				connections.setConnections(list);
-				
 				Document doc = XMLUtil.buildDocument(is, false);
-				NodeList nodeList = XMLUtil.query(doc, "//Connections");
+				NodeList nodeList = XMLUtil.query(doc, "//Connection");
 				int size = nodeList.getLength();
 				for (int i = 1; i <=size; i++) {
 					Node uuid = XMLUtil.queryNode(doc, "(//Connection/uuid)["+i+"]");
@@ -185,8 +227,7 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 				}
 				return connections;
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 		return null;
@@ -213,7 +254,7 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 				schemas.setSchema(list);
 				
 				Document doc = XMLUtil.buildDocument(is, false);
-				NodeList nodeList = XMLUtil.query(doc, "//Schemas");
+				NodeList nodeList = XMLUtil.query(doc, "//Schema");
 				int size = nodeList.getLength();
 				for (int i = 1; i <=size; i++) {
 					Node uuid = XMLUtil.queryNode(doc, "(//Schema/uuid)["+i+"]");
@@ -243,7 +284,6 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 				return schemas;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

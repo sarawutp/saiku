@@ -15,7 +15,7 @@ public class HttpClientUtil {
 		try{
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
-	
+			
 			return conn.getInputStream();
 		}catch(Exception e){
 			e.printStackTrace();
