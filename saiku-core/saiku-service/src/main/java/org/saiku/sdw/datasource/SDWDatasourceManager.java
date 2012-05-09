@@ -14,6 +14,8 @@ import org.saiku.sdw.client.dto.Catalog;
 import org.saiku.sdw.client.dto.Catalogs;
 import org.saiku.sdw.client.dto.Connection;
 import org.saiku.sdw.client.dto.Schema;
+import org.saiku.sdw.client.dto.SchemaLanguage;
+import org.saiku.sdw.client.dto.SchemaLanguages;
 import org.saiku.sdw.client.dto.Schemas;
 import org.saiku.sdw.client.dto.Workspace;
 import org.saiku.sdw.client.dto.Workspaces;
@@ -56,33 +58,47 @@ public class SDWDatasourceManager implements IDatasourceManager{
 						String connectionname = schema.getConnectionName();
 						if(schemaName != null && connectionname != null){
 							Connection connection = sdwMetadataClient.retrieveConnection(workspaceName,connectionname );
-							String mondrianSchemaXML = sdwMetadataClient.retrieveMondrainSchemasXML(workspaceName, catalogName, schemaName);
-							if(mondrianSchemaXML != null && connection != null){
+							
+							SchemaLanguages schemaLanguages = sdwMetadataClient.retrieveSchemaLanguages(workspaceName, catalogName, schemaName);
+							for(SchemaLanguage schemaLanguage : schemaLanguages.getSchemaLanguages()) {
+
+								String mondrianSchemaXML = schemaLanguage.getXml();
 								
-								 log.info("create datasource for workspaceName="+workspaceName + ", catalogName=" + catalogName + ", schemaName=" + schemaName);
-								
-								 //Add the database connection info.
-								 Properties props = new Properties();
-								 props.setProperty(ISaikuConnection.USERNAME_KEY, connection.getUsername());
-								 props.setProperty(ISaikuConnection.PASSWORD_KEY, connection.getPassword());
-								 props.setProperty(ISaikuConnection.DRIVER_KEY, "mondrian.olap4j.MondrianOlap4jDriver");
-								 
-								 //Add the database URL		
-								 StringBuffer buffer = new StringBuffer();
-								 buffer.append("jdbc:mondrian:Jdbc=");
-								 buffer.append(connection.getUrl());
-								 
-								 //Add mondrain schema for each connection
-								 buffer.append(";CatalogContent="+mondrianSchemaXML);
-								 buffer.append(";JdbcDrivers=");
-								 buffer.append(connection.getDriver());
+								if(mondrianSchemaXML != null && connection != null){
 									
-								 props.setProperty(ISaikuConnection.URL_KEY, buffer.toString());
-								 
-								 String datasourceName = schema.getName();
-								 //String datasourceName = workspaceName + " | " + catalogName + " | " + schemaName + " | " + connectionname;
-								 SaikuDatasource ds = new SaikuDatasource(datasourceName,SaikuDatasource.Type.OLAP,props);
-								 datasources.put(datasourceName, ds);
+									 log.info("create datasource for workspaceName="+workspaceName + ", catalogName=" + catalogName + ", schemaName=" + schemaName + ", language=" + schemaLanguage.getLanguage());
+									
+									 //Add the database connection info.
+									 Properties props = new Properties();
+									 props.setProperty(ISaikuConnection.USERNAME_KEY, connection.getUsername());
+									 props.setProperty(ISaikuConnection.PASSWORD_KEY, connection.getPassword());
+									 props.setProperty(ISaikuConnection.DRIVER_KEY, "mondrian.olap4j.MondrianOlap4jDriver");
+									 
+									 //Add the database URL		
+									 StringBuffer buffer = new StringBuffer();
+									 buffer.append("jdbc:mondrian:Jdbc=");
+									 buffer.append(connection.getUrl());
+									 
+									 //Add mondrain schema for each connection
+									 buffer.append(";CatalogContent="+mondrianSchemaXML);
+									 buffer.append(";JdbcDrivers=");
+									 buffer.append(connection.getDriver());
+										
+									 props.setProperty(ISaikuConnection.URL_KEY, buffer.toString());
+
+									 // TODO: should be managed better than this!
+									 //
+									 String datasourceName = null;
+									 if(schema.getName().endsWith("- " + schemaLanguage.getLanguage()))
+										 datasourceName = schema.getName();
+									 else
+										 datasourceName = schema.getName() + " - " + schemaLanguage.getLanguage();
+									 
+									 //String datasourceName = workspaceName + " | " + catalogName + " | " + schemaName + " | " + connectionname;
+									 SaikuDatasource ds = new SaikuDatasource(datasourceName,SaikuDatasource.Type.OLAP,props);
+									 datasources.put(datasourceName, ds);
+								}
+								
 							}
 						}else{
 							log.error("Schema || connectionname not found for workspaceName="+workspaceName + ", catalogName="+catalogName);

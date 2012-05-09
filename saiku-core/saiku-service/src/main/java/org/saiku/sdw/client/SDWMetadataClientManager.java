@@ -5,16 +5,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-
-
 import org.saiku.sdw.client.dto.Catalog;
 import org.saiku.sdw.client.dto.Catalogs;
 import org.saiku.sdw.client.dto.Connection;
 import org.saiku.sdw.client.dto.Connections;
 import org.saiku.sdw.client.dto.Schema;
+import org.saiku.sdw.client.dto.SchemaLanguage;
+import org.saiku.sdw.client.dto.SchemaLanguages;
 import org.saiku.sdw.client.dto.Schemas;
 import org.saiku.sdw.client.dto.Workspace;
 import org.saiku.sdw.client.dto.Workspaces;
@@ -313,5 +312,55 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 		}
 		return null;
 	}
+
+	
+	/**
+	 * Retrieves the SchemaLanguagess from SDW metadata service.
+	 * <br/><br/><b>Service URI:</b> /techcdr-sdw/services/resources/schemas/{workspaceName}/{catalogName}.{schemaName}/language
+	 * @param workspaceName
+	 * @param catalogName
+	 * @param schemaName
+	 * @return Schema languages info
+	 */
+	public SchemaLanguages retrieveSchemaLanguages(String workspaceName, String catalogName, String schemaName){
+		String schemaLanguagesUrlStr = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getSchemaLanguagesUri();
+		schemaLanguagesUrlStr = schemaLanguagesUrlStr.replaceAll("\\{workspaceName\\}", workspaceName);
+		schemaLanguagesUrlStr = schemaLanguagesUrlStr.replaceAll("\\{catalogName\\}", catalogName);
+		schemaLanguagesUrlStr = schemaLanguagesUrlStr.replaceAll("\\{schemaName\\}", schemaName);
+		schemaLanguagesUrlStr = schemaLanguagesUrlStr.replaceAll("\\s", "%20");
+		log.debug(schemaLanguagesUrlStr);
+		try {
+			InputStream is = deriveInputStreamFrom(new URL(schemaLanguagesUrlStr));
+			if(is != null){
+				SchemaLanguages schemaLanguages = new SchemaLanguages();
+				List<SchemaLanguage> list = new ArrayList<SchemaLanguage>();
+				schemaLanguages.setSchemaLanguages(list);
+				
+				Document doc = XMLUtil.buildDocument(is, false);
+				NodeList nodeList = XMLUtil.query(doc, "//SchemaLanguage");
+				int size = nodeList.getLength();
+				for (int i = 1; i <=size; i++) {
+					Node language = XMLUtil.queryNode(doc, "(//SchemaLanguage/language)["+i+"]");
+					Node xml = XMLUtil.queryNode(doc, "(//SchemaLanguage/xml)["+i+"]");
+					Node fileName = XMLUtil.queryNode(doc, "(//SchemaLanguage/fileName)["+i+"]");
+					
+					SchemaLanguage schemaLanguage = new SchemaLanguage();
+					if(language != null)
+						schemaLanguage.setLanguage(language.getTextContent());
+					if(xml != null)
+						schemaLanguage.setXml(xml.getTextContent());
+					if(fileName != null)
+						schemaLanguage.setFileName(fileName.getTextContent());
+					
+					list.add(schemaLanguage);
+				}
+				return schemaLanguages;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	
 }

@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.saiku.TConnectionManager;
 import org.saiku.datasources.connection.IConnectionManager;
@@ -42,6 +41,7 @@ public class SDWDatasourceManagerTest {
 			config.setMondrainSchemaUri((String) prop.get("mondrainSchemaUri"));
 			config.setSchemaUri((String) prop.get("schemaUri"));
 			config.setWorkspaceUri((String) prop.get("workspaceUri"));
+			config.setSchemaLanguagesUri((String) prop.get("schemaLanguagesUri"));
 			
 		}catch(Exception e){
 			e.printStackTrace();
