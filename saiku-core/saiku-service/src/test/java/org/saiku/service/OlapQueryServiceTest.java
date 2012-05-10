@@ -32,7 +32,7 @@ public class OlapQueryServiceTest extends ServiceTest{
 	
 	@BeforeClass
 	public static void loadParams(){
-		OlapTestParams.setupParams(OlapTestParams.FAOSTAT_DATA);
+		OlapTestParams.setupParams(OlapTestParams.FOODMART_DATA);
 	}
 	
 	/**

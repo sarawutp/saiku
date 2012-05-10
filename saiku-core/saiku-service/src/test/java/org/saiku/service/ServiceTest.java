@@ -33,10 +33,10 @@ public class ServiceTest {
 	protected static final String connectionName = "test";
 	
 	//FoodMart connection properties
-	//protected static final String connectionProp = "connection.properties";
+	protected static final String connectionProp = "connection.properties";
 	
 	//FAOSTAT connection properties
-	protected static final String connectionProp = "faostat-connection.properties";
+	//protected static final String connectionProp = "faostat-connection.properties";
 	
 	@BeforeClass
 	public static void setup() throws IOException {

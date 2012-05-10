@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.olap4j.OlapConnection;
 import org.saiku.AbstractServiceUtils;
@@ -39,7 +38,7 @@ public class OlapMetaExplorerTest extends ServiceTest{
 
 	@BeforeClass
 	public static void loadParams(){
-		OlapTestParams.setupParams(OlapTestParams.FAOSTAT_DATA);
+		OlapTestParams.setupParams(OlapTestParams.FOODMART_DATA);
 	}
 	
     /**
