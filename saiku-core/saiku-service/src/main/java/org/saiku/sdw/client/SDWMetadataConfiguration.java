@@ -8,7 +8,7 @@ public class SDWMetadataConfiguration {
 	private String connectionsUri;
 	private String catalogUri;
 	private String schemaUri;
-	private String mondrainSchemaUri;
+	private String mondrianSchemaUri;
 	private String schemaLanguagesUri;
 
 	public String getHost() {
@@ -51,12 +51,14 @@ public class SDWMetadataConfiguration {
 		this.schemaUri = schemaUri;
 	}
 
-	public String getMondrainSchemaUri() {
-		return mondrainSchemaUri;
+	
+
+	public String getMondrianSchemaUri() {
+		return mondrianSchemaUri;
 	}
 
-	public void setMondrainSchemaUri(String mondrainSchemaUri) {
-		this.mondrainSchemaUri = mondrainSchemaUri;
+	public void setMondrianSchemaUri(String mondrianSchemaUri) {
+		this.mondrianSchemaUri = mondrianSchemaUri;
 	}
 
 	public String getConnectionsUri() {

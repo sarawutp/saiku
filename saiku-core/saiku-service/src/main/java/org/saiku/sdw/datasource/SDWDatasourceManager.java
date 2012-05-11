@@ -79,7 +79,7 @@ public class SDWDatasourceManager implements IDatasourceManager{
 									 buffer.append("jdbc:mondrian:Jdbc=");
 									 buffer.append(connection.getUrl());
 									 
-									 //Add mondrain schema for each connection
+									 //Add mondrian schema for each connection
 									 buffer.append(";CatalogContent="+mondrianSchemaXML);
 									 buffer.append(";JdbcDrivers=");
 									 buffer.append(connection.getDriver());

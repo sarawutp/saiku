@@ -294,10 +294,10 @@ public class SDWMetadataClientManager extends SDWClientAbstract{
 	 * @param workspaceName
 	 * @param catalogName
 	 * @param schemaName
-	 * @return Mondrain Schema
+	 * @return Mondrian Schema
 	 */
-	public String retrieveMondrainSchemasXML(String workspaceName,String catalogName,String schemaName){
-		String schemaXML = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getMondrainSchemaUri();
+	public String retrieveMondrianSchemasXML(String workspaceName,String catalogName,String schemaName){
+		String schemaXML = sdwMetadataConfiguration.getHost()+sdwMetadataConfiguration.getMondrianSchemaUri();
 		schemaXML = schemaXML.replaceAll("\\{workspaceName\\}", workspaceName);
 		schemaXML = schemaXML.replaceAll("\\{catalogName\\}", catalogName);
 		schemaXML = schemaXML.replaceAll("\\{schemaName\\}", schemaName);

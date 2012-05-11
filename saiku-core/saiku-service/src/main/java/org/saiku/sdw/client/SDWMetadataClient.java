@@ -19,7 +19,7 @@ public interface SDWMetadataClient {
 	
 	public Schemas retrieveSchemas(String workspaceName,String catalogName);
 	
-	public String retrieveMondrainSchemasXML(String workspaceName,String catalogName,String schemaName);
+	public String retrieveMondrianSchemasXML(String workspaceName,String catalogName,String schemaName);
 	
 	public SchemaLanguages retrieveSchemaLanguages(String workspaceName, String catalogName, String schemaName);
 }
