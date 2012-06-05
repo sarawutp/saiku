@@ -26,21 +26,22 @@ public class SDWDatasourceManager implements IDatasourceManager{
 	
 	private static Logger log = Logger.getLogger(SDWDatasourceManager.class);
 	
-	
 	private Map<String,SaikuDatasource> datasources = Collections.synchronizedMap(new HashMap<String,SaikuDatasource>());
 	private SDWMetadataClient sdwMetadataClient;
 	
 	public SDWDatasourceManager(SDWMetadataClient sdwMetadataClient){
 		this.sdwMetadataClient = sdwMetadataClient;
+		load();
 	}
 	
 	public void setSdwMetadataClient(SDWMetadataClient sdwMetadataClient) {
 		this.sdwMetadataClient = sdwMetadataClient;
+		load();
 	}
 
 	protected void createDatasource(Workspace workspace) throws Exception {
 		String workspaceName = workspace.getName();
-		log.info("create datasource for workspaceName="+workspaceName);
+		log.debug("create datasource for workspaceName="+workspaceName);
 		
 		Catalogs catalogs = sdwMetadataClient.retrieveCatalogs(workspaceName);
 		List<Catalog> listCatalog = catalogs.getCatalog();
@@ -66,10 +67,20 @@ public class SDWDatasourceManager implements IDatasourceManager{
 								
 								if(mondrianSchemaXML != null && connection != null){
 									
-									 log.info("create datasource for workspaceName="+workspaceName + ", catalogName=" + catalogName + ", schemaName=" + schemaName + ", language=" + schemaLanguage.getLanguage());
+									 log.debug("create datasource for workspaceName="+workspaceName + ", catalogName=" + catalogName + ", schemaName=" + schemaName + ", language=" + schemaLanguage.getLanguage());
 									
+									// TODO: should be managed better than this!
+									 //
+									 String datasourceName = null;
+									 if(schema.getName().endsWith("- " + schemaLanguage.getLanguage()))
+										 datasourceName = schema.getName();
+									 else
+										 datasourceName = schema.getName() + " - " + schemaLanguage.getLanguage();
+									 
 									 //Add the database connection info.
 									 Properties props = new Properties();
+									 props.setProperty(ISaikuConnection.NAME_KEY, datasourceName);
+									 props.setProperty("type", ISaikuConnection.OLAP_DATASOURCE);
 									 props.setProperty(ISaikuConnection.USERNAME_KEY, connection.getUsername());
 									 props.setProperty(ISaikuConnection.PASSWORD_KEY, connection.getPassword());
 									 props.setProperty(ISaikuConnection.DRIVER_KEY, "mondrian.olap4j.MondrianOlap4jDriver");
@@ -86,17 +97,10 @@ public class SDWDatasourceManager implements IDatasourceManager{
 										
 									 props.setProperty(ISaikuConnection.URL_KEY, buffer.toString());
 
-									 // TODO: should be managed better than this!
-									 //
-									 String datasourceName = null;
-									 if(schema.getName().endsWith("- " + schemaLanguage.getLanguage()))
-										 datasourceName = schema.getName();
-									 else
-										 datasourceName = schema.getName() + " - " + schemaLanguage.getLanguage();
-									 
 									 //String datasourceName = workspaceName + " | " + catalogName + " | " + schemaName + " | " + connectionname;
 									 SaikuDatasource ds = new SaikuDatasource(datasourceName,SaikuDatasource.Type.OLAP,props);
 									 datasources.put(datasourceName, ds);
+									 
 								}
 								
 							}
@@ -115,7 +119,7 @@ public class SDWDatasourceManager implements IDatasourceManager{
 	
 	public void load() {
 		
-		log.info("load datasource");
+		log.debug("load datasource");
 		datasources.clear();
 		try{
 			
@@ -134,18 +138,18 @@ public class SDWDatasourceManager implements IDatasourceManager{
 	}
 
 	public SaikuDatasource addDatasource(SaikuDatasource datasource) {
-		log.info("add datasource | datasource="+datasource);
+		log.debug("add datasource | datasource="+datasource);
 		datasources.put(datasource.getName(), datasource);
 		return datasource;
 	}
 
 	public SaikuDatasource setDatasource(SaikuDatasource datasource) {
-		log.info("set datasource | datasource="+datasource);
+		log.debug("set datasource | datasource="+datasource);
 		return addDatasource(datasource);
 	}
 
 	public List<SaikuDatasource> addDatasources(List<SaikuDatasource> datasources) {
-		log.info("add list of datasource | datasources="+datasources);
+		log.debug("add list of datasource | datasources="+datasources);
 		for (SaikuDatasource ds : datasources) {
 			addDatasource(ds);
 		}
@@ -153,19 +157,18 @@ public class SDWDatasourceManager implements IDatasourceManager{
 	}
 
 	public boolean removeDatasource(String datasourceName) {
-		log.info("remove datasource");
+		log.debug("remove datasource");
 		datasources.remove(datasourceName);
 		return true;
 	}
 
 	public Map<String, SaikuDatasource> getDatasources() {
-		log.info("get list of datasource");
-		if(datasources.isEmpty())load();
+		log.debug("get list of datasource");
 		return datasources;
 	}
 
 	public SaikuDatasource getDatasource(String datasourceName) {
-		log.info("get datasource | datasourceName="+datasourceName);
+		log.debug("get datasource | datasourceName="+datasourceName);
 		return datasources.get(datasourceName);
 	}
 	
