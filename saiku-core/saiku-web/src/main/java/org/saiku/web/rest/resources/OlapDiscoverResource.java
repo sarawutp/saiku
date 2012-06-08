@@ -36,7 +36,6 @@ import org.saiku.olap.dto.SaikuHierarchy;
 import org.saiku.olap.dto.SaikuLevel;
 import org.saiku.olap.dto.SaikuMember;
 import org.saiku.service.olap.OlapDiscoverService;
-import org.saiku.service.util.exception.SaikuServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -79,6 +78,19 @@ public class OlapDiscoverResource implements Serializable {
      public List<SaikuConnection> refreshConnections() {
     	try {
     		olapDiscoverService.refreshAllConnections();
+			return olapDiscoverService.getAllConnections();
+		} catch (Exception e) {
+			log.error(this.getClass().getName(),e);
+			return new ArrayList<SaikuConnection>();
+		}
+    }
+    
+    @GET
+    @Produces({"application/json" })
+  	@Path("/refresh/{connection}")
+     public List<SaikuConnection> refreshConnection(@PathParam("connection") String connectionName) {
+    	try {
+    		olapDiscoverService.refreshConnection(connectionName);
 			return olapDiscoverService.getAllConnections();
 		} catch (Exception e) {
 			log.error(this.getClass().getName(),e);
