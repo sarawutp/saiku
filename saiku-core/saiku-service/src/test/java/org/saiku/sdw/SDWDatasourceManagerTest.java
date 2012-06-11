@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.saiku.TConnectionManager;
 import org.saiku.datasources.connection.IConnectionManager;
@@ -26,7 +25,7 @@ public class SDWDatasourceManagerTest {
 	
 	public static IDatasourceManager ds;
 	
-	@Ignore
+	
 	@BeforeClass
 	public static void setup() throws IOException {
 		SDWMetadataConfiguration config = new SDWMetadataConfiguration();
@@ -58,7 +57,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test load all the connection from SDW metadata service and store in saiku datasources 
 	 */
-	@Ignore
+	
 	@Test
 	public void testLoadDatasource(){
 		System.out.println("testing loading datasource from sdw metadata service");
@@ -80,7 +79,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test get the existing datasource.
 	 */
-	@Ignore
+
 	@Test
 	public void testGetDatasource(){
 		System.out.println("testing get datasource");
@@ -101,7 +100,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test get all datasources.
 	 */
-	@Ignore
+
 	@Test
 	public void testGetDatasources(){
 		System.out.println("testing get datasources");
@@ -114,7 +113,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test add new datasources.
 	 */
-	@Ignore
+
 	@Test
 	public void testAddDatasource(){
 		System.out.println("testing add new datasources");
@@ -128,7 +127,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test remove add new datasources.
 	 */
-	@Ignore
+
 	@Test
 	public void testRemoveDatasource(){
 		System.out.println("testing remove datasources");
@@ -146,7 +145,7 @@ public class SDWDatasourceManagerTest {
 	/**
 	 * This method attempts to test build OlapMetaExplorer
 	 */
-	@Ignore
+
 	@Test
 	public void testBuildOlapMetaExplorer(){
 		System.out.println("testing OlapMetaExplorer");
