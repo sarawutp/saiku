@@ -34,9 +34,9 @@
               <directory>src/main/web</directory>
               <filtering>true</filtering>
               <targetPath>WEB-INF</targetPath>
-              <excludes>
-                <exclude>web.xml</exclude>
-              </excludes>
+              <includes>
+                <include>saiku-beans.xml</include>
+              </includes>
             </resource>
           </webResources>
         </configuration>
