@@ -56,6 +56,9 @@
 								<zip destfile="target/${project.artifactId}-${project.version}.war">
 									<zipfileset dir="target/${project.artifactId}-${project.version}/" />
 								</zip>
+								<zip destfile="target/saikufao.war">
+									<zipfileset dir="target/${project.artifactId}-${project.version}/" />
+								</zip>
 								<copy todir="target/${project.artifactId}-foodmart-${project.version}">
 									<fileset dir="target/${project.artifactId}-${project.version}/" />
 								</copy>
