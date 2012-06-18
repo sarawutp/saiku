@@ -31,10 +31,12 @@
         <configuration>
           <webResources>
             <resource>
-              <!-- this is relative to the pom.xml directory -->
               <directory>src/main/web</directory>
               <filtering>true</filtering>
               <targetPath>WEB-INF</targetPath>
+              <excludes>
+                <exclude>web.xml</exclude>
+              </excludes>
             </resource>
           </webResources>
         </configuration>
