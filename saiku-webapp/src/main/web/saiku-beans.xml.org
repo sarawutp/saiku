@@ -4,41 +4,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean id="classpathDsManager" class="org.saiku.service.datasource.ClassPathResourceDatasourceManager">
+<bean id="classpathDsManager" class="org.saiku.service.datasource.ClassPathResourceDatasourceManager">
 		<property name="path" value="res:saiku-datasources"/>
 	</bean>
-	<!--  <property name="path" value="file:///var/saiku/saiku-datasources/"/> -->
+	 <!--  <property name="path" value="file:///var/saiku/saiku-datasources/"/> -->
 	
 	<bean id="sessionService" class="org.saiku.web.service.SessionService">
 		<property name="authenticationManager" ref="authenticationManager" />
 	</bean>
 	
-	<bean id="sdwConfig" class="org.saiku.sdw.client.SDWMetadataConfiguration">
-		<property name="host" value="${techcdr.saikufao.rest.client.host}"></property>
-		<property name="workspaceUri" value="/techcdr-sdw/services/resources/workspaces"></property>
-		<property name="connectionUri" value="/techcdr-sdw/services/resources/connections/{workspaceName}/{connectionName}"></property>
-		<property name="connectionsUri" value="/techcdr-sdw/services/resources/connections/{workspaceName}"></property>
-		<property name="catalogUri" value="/techcdr-sdw/services/resources/catalogs/{workspaceName}"></property>
-		<property name="schemaUri" value="/techcdr-sdw/services/resources/schemas/{workspaceName}?catalogName={catalogName}"></property>
-		<property name="mondrianSchemaUri" value="/techcdr-sdw/services/resources/schemas/{workspaceName}/{catalogName}.{schemaName}/xml"></property>
-		<property name="schemaLanguagesUri" value="/techcdr-sdw/services/resources/schemas/{workspaceName}/{catalogName}.{schemaName}/language"></property>
-	</bean>
-
-	<bean id="sdwMetadataClientManager" class="org.saiku.sdw.client.SDWMetadataClientManager">
-		<constructor-arg>
-			<ref bean="sdwConfig"/>
-		</constructor-arg>
-	</bean>
-
-	<bean id="sdwDsManager" class="org.saiku.sdw.datasource.SDWDatasourceManager">
-		<constructor-arg>
-			<ref bean="sdwMetadataClientManager"/>
-		</constructor-arg>
-	</bean>
-
-
 	<bean id="connectionManager" class="org.saiku.web.impl.SecurityAwareConnectionManager" init-method="init">
-		<property name="dataSourceManager" ref="sdwDsManager" />
+		<property name="dataSourceManager" ref="classpathDsManager" />
 		<property name="sessionService" ref="sessionService" />
 		
 	</bean>
